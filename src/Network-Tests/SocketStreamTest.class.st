@@ -68,15 +68,15 @@ SocketStreamTest >> testUpTo [
 
 	clientStream
 		nextPutAll: 'A line of text';
-		cr;
+		nextPutAll: String cr;
 		nextPutAll: 'with more text';
 		flush.
-	self assert: (serverStream upTo: Character cr) equals: 'A line of text'.
+	self assert: (serverStream upTo: Character cr) = 'A line of text'.
 	[ (Delay forSeconds: 1) wait.
 	clientStream
 		nextPutAll: String cr;
 		flush ] fork.
-	self assert: (serverStream upTo: Character cr) equals: 'with more text'
+	self assert: (serverStream upTo: Character cr) = 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -106,7 +106,8 @@ SocketStreamTest >> testUpToAll [
 	"Tests correct behavior of #upToAll"
 
 	clientStream
-		nextPutAll: 'A line of text' , String crlf;
+		nextPutAll: 'A line of text';
+		nextPutAll: String crlf;
 		nextPutAll: 'with more text';
 		flush.
 	self assert: (serverStream upToAll: String crlf) = 'A line of text'.
@@ -114,9 +115,7 @@ SocketStreamTest >> testUpToAll [
 	clientStream
 		nextPutAll: String crlf;
 		flush ] fork.
-	self
-		assert: (serverStream upToAll: String crlf)
-		equals: 'with more text'
+	self assert: (serverStream upToAll: String crlf) = 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -206,17 +205,15 @@ SocketStreamTest >> testUpToSmallInteger [
 
 	clientStream
 		nextPutAll: 'A line of text';
-		cr;
+		nextPutAll: String cr;
 		nextPutAll: 'with more text';
 		flush.
-	self
-		assert: (serverStream upTo: Character cr)
-		equals: 'A line of text'.
+	self assert: (serverStream upTo: Character cr) = 'A line of text'.
 	[ (Delay forSeconds: 1) wait.
 	clientStream
-		cr;
+		nextPutAll: String cr;
 		flush ] fork.
-	self assert: (serverStream upTo: 13) equals: 'with more text'
+	self assert: (serverStream upTo: 13) = 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -246,9 +243,8 @@ SocketStreamTest >> testUpToWithByteArray [
 		equals: 'A line of text'.
 	[ (Delay forSeconds: 1) wait.
 	clientStream
-		cr;
+		nextPut: Character cr;
 		flush ] fork.
 	self
-		assert: (serverStream upTo: Character cr) asString
-		equals: 'with more text'
+		assert: (serverStream upTo: Character cr) asString = 'with more text'
 ]

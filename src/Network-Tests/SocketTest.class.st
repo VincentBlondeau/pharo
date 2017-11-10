@@ -100,11 +100,9 @@ SocketTest >> testLocalAddress [
 		assert: listenerSocket localAddress asSocketAddress
 		equals: self listenerAddress.
 	self
-		assert: clientSocket localAddress asSocketAddress
-		equals: self listenerAddress.
+		assert: clientSocket localAddress asSocketAddress = self listenerAddress.
 	self
-		assert: serverSocket localAddress asSocketAddress
-		equals: self listenerAddress
+		assert: serverSocket localAddress asSocketAddress = self listenerAddress
 ]
 
 { #category : #tests }
@@ -124,11 +122,9 @@ SocketTest >> testRemoteAddress [
 	self testServerAccept.
 	self assert: listenerSocket remoteAddress equals: #[0 0 0 0].
 	self
-		assert: clientSocket remoteAddress asSocketAddress
-		equals: self listenerAddress.
+		assert: clientSocket remoteAddress asSocketAddress = self listenerAddress.
 	self
-		assert: serverSocket remoteAddress asSocketAddress
-		equals: self listenerAddress
+		assert: serverSocket remoteAddress asSocketAddress = self listenerAddress
 ]
 
 { #category : #tests }
@@ -137,7 +133,7 @@ SocketTest >> testRemotePort [
 
 	self testServerAccept.
 	self assert: listenerSocket remotePort equals: 0.
-	self assert: clientSocket remotePort equals: self listenerPort.
+	self assert: clientSocket remotePort = self listenerPort.
 	self assert: serverSocket remotePort > 0
 ]
 
@@ -147,8 +143,9 @@ SocketTest >> testServerAccept [
 
 	self testClientConnect.
 	serverSocket := listenerSocket waitForAcceptFor: 2.
-	self assert: serverSocket notNil.
-	self assert: serverSocket isConnected
+	self assert: (serverSocket notNil).
+	self assert: (serverSocket isConnected).
+
 ]
 
 { #category : #tests }
