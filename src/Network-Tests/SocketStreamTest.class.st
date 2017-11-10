@@ -66,12 +66,17 @@ SocketStreamTest >> testNextIntoCloseNonSignaling [
 SocketStreamTest >> testUpTo [
 	"Tests correct behavior of #upTo:"
 
-	clientStream nextPutAll:'A line of text', String cr, 'with more text'; flush.
-	self assert: (serverStream upTo: Character cr) = 'A line of text'.
-	[(Delay forSeconds: 1) wait.
-	clientStream nextPutAll: String cr; flush] fork.
-	self assert: (serverStream upTo: Character cr) = 'with more text'.
-
+	clientStream
+		nextPutAll: 'A line of text';
+		cr;
+		nextPutAll: 'with more text';
+		flush.
+	self assert: (serverStream upTo: Character cr) equals: 'A line of text'.
+	[ (Delay forSeconds: 1) wait.
+	clientStream
+		nextPutAll: String cr;
+		flush ] fork.
+	self assert: (serverStream upTo: Character cr) equals: 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -83,7 +88,7 @@ SocketStreamTest >> testUpToAfterCloseNonSignaling [
 	clientStream close.
 	serverStream shouldSignal: false.
 	resp := serverStream upTo: Character cr.
-	self assert: resp = 'A line of text'.
+	self assert: resp equals: 'A line of text'
 ]
 
 { #category : #'stream protocol' }
@@ -100,12 +105,18 @@ SocketStreamTest >> testUpToAfterCloseSignaling [
 SocketStreamTest >> testUpToAll [
 	"Tests correct behavior of #upToAll"
 
-	clientStream nextPutAll:'A line of text', String crlf, 'with more text'; flush.
+	clientStream
+		nextPutAll: 'A line of text' , String crlf;
+		nextPutAll: 'with more text';
+		flush.
 	self assert: (serverStream upToAll: String crlf) = 'A line of text'.
-	[(Delay forSeconds: 1) wait.
-	clientStream nextPutAll: String crlf; flush] fork.
-	self assert: (serverStream upToAll: String crlf) = 'with more text'.
-
+	[ (Delay forSeconds: 1) wait.
+	clientStream
+		nextPutAll: String crlf;
+		flush ] fork.
+	self
+		assert: (serverStream upToAll: String crlf)
+		equals: 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -117,7 +128,7 @@ SocketStreamTest >> testUpToAllAfterCloseNonSignaling [
 	clientStream close.
 	serverStream shouldSignal: false.
 	resp := serverStream upToAll: String crlf.
-	self assert: resp = 'A line of text'.
+	self assert: resp equals: 'A line of text'
 ]
 
 { #category : #'stream protocol' }
@@ -134,8 +145,12 @@ SocketStreamTest >> testUpToAllAfterCloseSignaling [
 SocketStreamTest >> testUpToAllLimit [
 	"Tests correct behavior of #upToAll:limit:"
 
-	clientStream nextPutAll:'A line of text'; flush.
-	self assert: (serverStream upToAll: String crlf limit: 5) = 'A line of text'.
+	clientStream
+		nextPutAll: 'A line of text';
+		flush.
+	self
+		assert: (serverStream upToAll: String crlf limit: 5)
+		equals: 'A line of text'
 ]
 
 { #category : #'stream protocol' }
@@ -177,20 +192,31 @@ SocketStreamTest >> testUpToEndCloseNonSignaling [
 SocketStreamTest >> testUpToMax [
 	"Tests correct behavior of #upToAll:max:"
 
-	clientStream nextPutAll:'A line of text'; flush.
-	self assert: (serverStream upTo: Character cr limit: 5) = 'A line of text'.
+	clientStream
+		nextPutAll: 'A line of text';
+		flush.
+	self
+		assert: (serverStream upTo: Character cr limit: 5)
+		equals: 'A line of text'
 ]
 
 { #category : #'stream protocol' }
 SocketStreamTest >> testUpToSmallInteger [
 	"Tests correct behavior of #upTo:"
 
-	clientStream nextPutAll:'A line of text', String cr, 'with more text'; flush.
-	self assert: (serverStream upTo: Character cr) = 'A line of text'.
-	[(Delay forSeconds: 1) wait.
-	clientStream nextPutAll: String cr; flush] fork.
-	self assert: (serverStream upTo: 13) = 'with more text'.
-
+	clientStream
+		nextPutAll: 'A line of text';
+		cr;
+		nextPutAll: 'with more text';
+		flush.
+	self
+		assert: (serverStream upTo: Character cr)
+		equals: 'A line of text'.
+	[ (Delay forSeconds: 1) wait.
+	clientStream
+		cr;
+		flush ] fork.
+	self assert: (serverStream upTo: 13) equals: 'with more text'
 ]
 
 { #category : #'stream protocol' }
@@ -207,15 +233,22 @@ SocketStreamTest >> testUpToTimeout [
 SocketStreamTest >> testUpToWithByteArray [
 	"Tests correct behavior of #upTo:"
 
-	|byteArray|
-	
-	byteArray := ('A line of text', String cr, 'with more text') asByteArray.
+	| byteArray |
+	byteArray := ('A line of text' , String cr , 'with more text')
+		asByteArray.
 	clientStream binary.
 	serverStream binary.
-	clientStream nextPutAll: byteArray; flush.
-	self assert: (serverStream upTo: Character cr) asString = 'A line of text'.
-	[(Delay forSeconds: 1) wait.
-	clientStream nextPut: Character cr; flush] fork.
-	self assert: (serverStream upTo: Character cr) asString = 'with more text'.
-
+	clientStream
+		nextPutAll: byteArray;
+		flush.
+	self
+		assert: (serverStream upTo: Character cr) asString
+		equals: 'A line of text'.
+	[ (Delay forSeconds: 1) wait.
+	clientStream
+		cr;
+		flush ] fork.
+	self
+		assert: (serverStream upTo: Character cr) asString
+		equals: 'with more text'
 ]
